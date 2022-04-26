@@ -2,20 +2,16 @@ package eu.myszojelenie.music.player.client;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.io.InputStream;
 
 public class MainActivity extends AppCompatActivity {
-
-    private static final Logger log = LoggerFactory.getLogger(MainActivity.class);
 
     private final StreamingService streamingService = new StreamingService();
 
@@ -29,13 +25,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void intentResultHandler(final Uri uri) {
-        log.info("Obtained Uri");
-        try {
-            final InputStream stream = getContentResolver().openInputStream(uri);
-            streamingService.stream(stream);
-        }
-        catch (final IOException e) {
-            log.warn("Error occurred during streaming");
-        }
+        Thread thread = new Thread(() -> {
+            try  {
+                Log.i(Consts.loggerTag, "Obtained Uri: " + uri);
+                try {
+                    final InputStream stream = getContentResolver().openInputStream(uri);
+                    streamingService.stream(stream);
+                }
+                catch (final IOException e) {
+                    Log.w(Consts.loggerTag, "Error occurred during streaming");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        thread.start();
     }
 }
