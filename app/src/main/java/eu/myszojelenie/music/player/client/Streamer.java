@@ -1,25 +1,48 @@
 package eu.myszojelenie.music.player.client;
 
-
 import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.concurrent.TimeUnit;
 
 public class Streamer {
 
-    public void streamFile(final InputStream stream, final DestinationTarget destination) throws IOException {
+    public void streamFile(final InputStream stream, final DestinationTarget destination) throws IOException, WavFileException {
         Log.i(Consts.loggerTag, "Starting streaming");
         try(final Socket socket = new Socket(destination.getIp(), destination.getPort())) {
             if(socket.isBound()) {
-                final OutputStream consumerStream = socket.getOutputStream();
+                final OutputStream outputStream = socket.getOutputStream();
+                final PrintWriter prPlayer = new PrintWriter(outputStream);
 
-                final byte[] buffer = new byte[destination.getBufferSize()];
-                int count;
-                while((count = stream.read(buffer)) != -1) {
-                    consumerStream.write(buffer, 0, count);
+                try {
+                    WavFile wavFile = WavFile.openWavFile(stream);
+                    SerializableAudioFormat saf = new SerializableAudioFormat(wavFile);
+
+                    // Sending audio format to server
+                    ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+                    objectOutputStream.writeObject(saf);
+
+                    // Buffering music to server
+                    int bitRead = 0;
+                    byte[] buff = new byte[SoundBufferPackage.BUFFER_SIZE];
+
+                    while (bitRead != -1) {
+                        bitRead = stream.read(buff, 0, buff.length);
+                        if (bitRead >= 0) {
+                            SoundBufferPackage msg = new SoundBufferPackage(buff, bitRead);
+                            prPlayer.println(Functions.toString(msg));
+                            prPlayer.flush();
+                        }
+
+                        TimeUnit.MILLISECONDS.sleep(100);
+                    }
+                } catch (Exception e) {
+                    Log.e(Consts.loggerTag, "CLIENT://Could not send music package!");
                 }
             }
         }

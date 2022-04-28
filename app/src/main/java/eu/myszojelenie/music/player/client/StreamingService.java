@@ -7,8 +7,8 @@ import java.io.InputStream;
 
 public class StreamingService {
 
-    private static final String IP = "192.168.1.?";
-    private static final int PORT = 7077;
+    private static final String IP = "192.168.1.???";
+    private static final int PORT = 6666;
     private static final int BUFFER = 2048;
 
     private final Streamer streamer = new Streamer();
@@ -19,7 +19,7 @@ public class StreamingService {
             streamer.streamFile(stream, new DestinationTarget(IP, PORT, BUFFER));
             Log.i(Consts.loggerTag, "Finished streaming file");
         }
-        catch (final IOException e) {
+        catch (final IOException | WavFileException e) {
             Log.w(Consts.loggerTag, "Error occurred during streaming file");
         }
     }
