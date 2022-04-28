@@ -1,4 +1,4 @@
-package eu.myszojelenie.music.player.client;
+package eu.myszojelenie.music.player.client.utils;
 
 import java.io.*;
 import java.util.Base64;

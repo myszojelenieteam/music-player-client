@@ -1,4 +1,4 @@
-package eu.myszojelenie.music.player.client;
+package eu.myszojelenie.music.player.client.streaming;
 
 import java.io.Serializable;
 

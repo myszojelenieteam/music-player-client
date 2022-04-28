@@ -1,4 +1,4 @@
-package eu.myszojelenie.music.player.client;
+package eu.myszojelenie.music.player.client.streaming;
 
 import android.util.Log;
 
@@ -9,6 +9,13 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.concurrent.TimeUnit;
+
+import eu.myszojelenie.music.player.client.serializable.SerializableAudioFormat;
+import eu.myszojelenie.music.player.client.utils.Consts;
+import eu.myszojelenie.music.player.client.utils.DestinationTarget;
+import eu.myszojelenie.music.player.client.utils.Functions;
+import eu.myszojelenie.music.player.client.wav.WavFile;
+import eu.myszojelenie.music.player.client.wav.WavFileException;
 
 public class Streamer {
 

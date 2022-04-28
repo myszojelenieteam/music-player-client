@@ -1,6 +1,8 @@
-package eu.myszojelenie.music.player.client;
+package eu.myszojelenie.music.player.client.serializable;
 
 import java.io.*;
+
+import eu.myszojelenie.music.player.client.wav.WavFile;
 
 public class SerializableAudioFormat implements Serializable {
 

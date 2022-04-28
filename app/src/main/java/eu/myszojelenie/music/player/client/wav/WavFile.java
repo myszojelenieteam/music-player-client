@@ -1,4 +1,4 @@
-package eu.myszojelenie.music.player.client;
+package eu.myszojelenie.music.player.client.wav;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -214,91 +214,5 @@ public class WavFile {
         for (int b = 0; b < numBytes; b++) val = (val << 8) + (buffer[--pos] & 0xFF);
 
         return val;
-    }
-
-    private long readSample() throws IOException, WavFileException {
-        long val = 0;
-
-        for (int b = 0; b < bytesPerSample; b++) {
-            if (bufferPointer == bytesRead) {
-                int read = iStream.read(buffer, 0, BUFFER_SIZE);
-                if (read == -1) throw new WavFileException("Not enough data available");
-                bytesRead = read;
-                bufferPointer = 0;
-            }
-
-            int v = buffer[bufferPointer];
-            if (b < bytesPerSample - 1 || bytesPerSample == 1) v &= 0xFF;
-            val += v << (b * 8);
-
-            bufferPointer++;
-        }
-
-        return val;
-    }
-
-    public int readFrames(float[] sampleBuffer, int numFramesToRead) throws IOException, WavFileException {
-        return readFramesInternal(sampleBuffer, 0, numFramesToRead);
-    }
-
-    private int readFramesInternal(float[] sampleBuffer, int offset, int numFramesToRead) throws IOException, WavFileException {
-        if (ioState != IOState.READING) throw new IOException("Cannot read from WavFile instance");
-
-        for (int f = 0; f < numFramesToRead; f++) {
-            if (frameCounter == numFrames) return f;
-
-            for (int c = 0; c < numChannels; c++) {
-                sampleBuffer[offset] = floatOffset + (float) readSample() / floatScale;
-                offset++;
-            }
-
-            frameCounter++;
-        }
-
-        return numFramesToRead;
-    }
-
-    public int readFrames(int[] sampleBuffer, int numFramesToRead) throws IOException, WavFileException {
-        return readFramesInternal(sampleBuffer, 0, numFramesToRead);
-    }
-
-    private int readFramesInternal(int[] sampleBuffer, int offset, int numFramesToRead) throws IOException, WavFileException {
-        if (ioState != IOState.READING) throw new IOException("Cannot read from WavFile instance");
-
-        for (int f = 0; f < numFramesToRead; f++) {
-            if (frameCounter == numFrames) return f;
-
-            for (int c = 0; c < numChannels; c++) {
-                sampleBuffer[offset] = (int) readSample();
-                offset++;
-            }
-
-            frameCounter++;
-        }
-
-        return numFramesToRead;
-    }
-
-    public void close() throws IOException {
-        // Close the input stream and set to null
-        if (iStream != null) {
-            iStream.close();
-            iStream = null;
-        }
-
-        if (oStream != null) {
-            // Write out anything still in the local buffer
-            if (bufferPointer > 0) oStream.write(buffer, 0, bufferPointer);
-
-            // If an extra byte is required for word alignment, add it to the end
-            if (wordAlignAdjust) oStream.write(0);
-
-            // Close the stream and set to null
-            oStream.close();
-            oStream = null;
-        }
-
-        // Flag that the stream is closed
-        ioState = IOState.CLOSED;
     }
 }

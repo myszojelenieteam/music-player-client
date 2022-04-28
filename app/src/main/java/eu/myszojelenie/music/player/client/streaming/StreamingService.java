@@ -1,9 +1,13 @@
-package eu.myszojelenie.music.player.client;
+package eu.myszojelenie.music.player.client.streaming;
 
 import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
+
+import eu.myszojelenie.music.player.client.utils.Consts;
+import eu.myszojelenie.music.player.client.utils.DestinationTarget;
+import eu.myszojelenie.music.player.client.wav.WavFileException;
 
 public class StreamingService {
 
