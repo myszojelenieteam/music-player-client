@@ -1,14 +1,13 @@
 package eu.myszojelenie.music.player.client;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
 
 public class StreamingService {
 
-    private static final Logger log = LoggerFactory.getLogger(StreamingService.class);
+    private static final String IP = "192.168.1.?";
     private static final int PORT = 7077;
     private static final int BUFFER = 2048;
 
@@ -16,12 +15,12 @@ public class StreamingService {
 
     public void stream(final InputStream stream) {
         try {
-            log.info("Starting streaming file");
-            streamer.streamFile(stream, new DestinationTarget(PORT, BUFFER));
-            log.info("Finished streaming file");
+            Log.i(Consts.loggerTag, "Starting streaming file");
+            streamer.streamFile(stream, new DestinationTarget(IP, PORT, BUFFER));
+            Log.i(Consts.loggerTag, "Finished streaming file");
         }
         catch (final IOException e) {
-            log.warn("Error occurred during streaming file");
+            Log.w(Consts.loggerTag, "Error occurred during streaming file");
         }
     }
 
