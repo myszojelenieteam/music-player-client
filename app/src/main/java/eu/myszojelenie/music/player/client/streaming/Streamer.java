@@ -2,22 +2,25 @@ package eu.myszojelenie.music.player.client.streaming;
 
 import android.util.Log;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Base64;
 import java.util.concurrent.TimeUnit;
 
 import eu.myszojelenie.music.player.client.serializable.SerializableAudioFormat;
 import eu.myszojelenie.music.player.client.utils.Consts;
 import eu.myszojelenie.music.player.client.utils.DestinationTarget;
-import eu.myszojelenie.music.player.client.utils.Functions;
 import eu.myszojelenie.music.player.client.wav.WavFile;
 import eu.myszojelenie.music.player.client.wav.WavFileException;
 
 public class Streamer {
+
+    ObjectMapper mapper = new ObjectMapper();
 
     public void streamFile(final InputStream stream, final DestinationTarget destination) throws IOException, WavFileException {
         Log.i(Consts.loggerTag, "Starting streaming");
@@ -31,8 +34,9 @@ public class Streamer {
                     SerializableAudioFormat saf = new SerializableAudioFormat(wavFile);
 
                     // Sending audio format to server
-                    ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
-                    objectOutputStream.writeObject(saf);
+                    String headerJson = mapper.writeValueAsString(saf);
+                    prPlayer.println(convertToBase64(headerJson));
+                    prPlayer.flush();
 
                     // Buffering music to server
                     int bitRead = 0;
@@ -42,7 +46,8 @@ public class Streamer {
                         bitRead = stream.read(buff, 0, buff.length);
                         if (bitRead >= 0) {
                             SoundBufferPackage msg = new SoundBufferPackage(buff, bitRead);
-                            prPlayer.println(Functions.toString(msg));
+                            String dataJson = mapper.writeValueAsString(msg);
+                            prPlayer.println(convertToBase64(dataJson));
                             prPlayer.flush();
                         }
 
@@ -55,4 +60,7 @@ public class Streamer {
         }
     }
 
+    private String convertToBase64(String jsonString) {
+        return Base64.getEncoder().encodeToString(jsonString.getBytes());
+    }
 }

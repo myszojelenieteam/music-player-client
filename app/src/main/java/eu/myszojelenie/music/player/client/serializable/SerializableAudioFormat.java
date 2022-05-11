@@ -1,10 +1,9 @@
 package eu.myszojelenie.music.player.client.serializable;
 
-import java.io.*;
 
 import eu.myszojelenie.music.player.client.wav.WavFile;
 
-public class SerializableAudioFormat implements Serializable {
+public class SerializableAudioFormat {
 
     private static final long serialVersionUID = 1L;
     private String encoding;
@@ -14,6 +13,9 @@ public class SerializableAudioFormat implements Serializable {
     private int frameSize;
     private float frameRate;
     private boolean bigEndian;
+
+    public SerializableAudioFormat() {
+    }
 
     public SerializableAudioFormat(WavFile wavFile) {
         this.encoding = "PCM_SIGNED";
@@ -25,14 +27,35 @@ public class SerializableAudioFormat implements Serializable {
         this.bigEndian = false;
     }
 
-    private void writeObject(ObjectOutputStream out) throws IOException {
-        out.defaultWriteObject();
-        out.writeObject(encoding);
-        out.writeFloat(sampleRate);
-        out.writeInt(sampleSizeInBits);
-        out.writeInt(channels);
-        out.writeInt(frameSize);
-        out.writeFloat(frameRate);
-        out.writeBoolean(bigEndian);
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
+    }
+
+    public String getEncoding() {
+        return encoding;
+    }
+
+    public float getSampleRate() {
+        return sampleRate;
+    }
+
+    public int getSampleSizeInBits() {
+        return sampleSizeInBits;
+    }
+
+    public int getChannels() {
+        return channels;
+    }
+
+    public int getFrameSize() {
+        return frameSize;
+    }
+
+    public float getFrameRate() {
+        return frameRate;
+    }
+
+    public boolean isBigEndian() {
+        return bigEndian;
     }
 }
