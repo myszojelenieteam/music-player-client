@@ -11,6 +11,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.io.IOException;
 import java.io.InputStream;
 
+import eu.myszojelenie.music.player.client.streaming.StreamingService;
+import eu.myszojelenie.music.player.client.utils.Consts;
+
 public class MainActivity extends AppCompatActivity {
 
     private final StreamingService streamingService = new StreamingService();
