@@ -11,7 +11,7 @@ import eu.myszojelenie.music.player.client.wav.WavFileException;
 
 public class StreamingService {
 
-    private static final String IP = "192.168.1.???";
+    private static final String IP = "192.168.1.166";
     private static final int PORT = 6666;
     private static final int BUFFER = 2048;
 
@@ -28,4 +28,13 @@ public class StreamingService {
         }
     }
 
+    public void pause() {
+        Log.i(Consts.loggerTag, "Pausing streaming file");
+        streamer.pause();
+    }
+
+    public void stop() {
+        Log.i(Consts.loggerTag, "Stopping streaming file");
+        streamer.stop();
+    }
 }
