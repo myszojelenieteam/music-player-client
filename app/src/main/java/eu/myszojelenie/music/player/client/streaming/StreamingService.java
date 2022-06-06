@@ -17,7 +17,7 @@ public class StreamingService {
     private static final int BUFFER = 2048;
 
     private String ip;
-    private int port;
+    private final int PORT = 6666;
     private InputStream toStream;
 
     private final Streamer streamer = new Streamer();
@@ -31,7 +31,7 @@ public class StreamingService {
     public void startStreaming() {
         try {
             Log.i(Consts.loggerTag, "Starting streaming file");
-            streamer.streamFile(toStream, new DestinationTarget(ip, port, BUFFER));
+            streamer.streamFile(toStream, new DestinationTarget(ip, PORT, BUFFER));
             Log.i(Consts.loggerTag, "Finished streaming file");
         } catch (WavFileException | IOException e) {
             this.manager.notify(NotificationType.CONNECTION_ERROR, null);
@@ -41,10 +41,6 @@ public class StreamingService {
 
     public void setIp(String ip) {
         this.ip = ip;
-    }
-
-    public void setPort(int port) {
-        this.port = port;
     }
 
     public void setToStream(InputStream toStream) {

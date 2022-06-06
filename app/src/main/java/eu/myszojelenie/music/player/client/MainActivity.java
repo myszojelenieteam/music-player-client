@@ -20,6 +20,7 @@ import eu.myszojelenie.music.player.client.utils.NotificationType;
 public class MainActivity extends AppCompatActivity implements Listener {
 
     private final StreamingService streamingService = new StreamingService();
+    private boolean isFileChosen = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +37,7 @@ public class MainActivity extends AppCompatActivity implements Listener {
         try {
             streamingService.setToStream(getContentResolver().openInputStream(uri));
             setTextOfView(R.id.fileStatus, "File has been selected", "#00FF00");
+            isFileChosen = true;
         } catch (IOException e) {
             e.printStackTrace();
             setTextOfView(R.id.fileStatus, "Error selecting a file", "#FF0000");
@@ -45,12 +47,26 @@ public class MainActivity extends AppCompatActivity implements Listener {
 
     private void startStreaming(View view) {
         String ip = ((EditText) findViewById(R.id.ipInput)).getText().toString();
-        int port = Integer.parseInt(((EditText) findViewById(R.id.portInput)).getText().toString());
         streamingService.setIp(ip);
-        streamingService.setPort(port);
 
-        setTextOfView(R.id.statusText, "Connected", "#00FF00");
-        new Thread(streamingService::startStreaming).start();
+        String message = "";
+        String color = "";
+        if(!isFileChosen) {
+            message += "File has to be chosen! ";
+            color = "#FF0000";
+        }
+        if(!lookLikeIp(ip)) {
+            message += "Ip address is incorrect";
+            color = "#FF0000";
+        }
+
+        if(isFileChosen && lookLikeIp(ip)) {
+            message = "Connected";
+            color = "#00FF00";
+            new Thread(streamingService::startStreaming).start();
+        }
+
+        setTextOfView(R.id.statusText, message, color);
     }
 
     @Override
@@ -68,5 +84,23 @@ public class MainActivity extends AppCompatActivity implements Listener {
         TextView view = (TextView) findViewById(viewId);
         view.setText(content);
         view.setTextColor(Color.parseColor(color));
+    }
+
+    private boolean lookLikeIp(String ip) {
+        if(ip == null) {
+            return false;
+        }
+
+        String[] parts = ip.split("\\.");
+        for(String part: parts) {
+            try {
+                Integer.parseInt(part);
+            }
+            catch (NumberFormatException e) {
+                return false;
+            }
+        }
+
+        return parts.length == 4;
     }
 }
