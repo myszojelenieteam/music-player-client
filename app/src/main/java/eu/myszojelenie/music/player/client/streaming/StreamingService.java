@@ -38,12 +38,21 @@ public class StreamingService {
         }
     }
 
-
     public void setIp(String ip) {
         this.ip = ip;
     }
 
     public void setToStream(InputStream toStream) {
         this.toStream = toStream;
+    }
+
+    public void pause() {
+        Log.i(Consts.loggerTag, "Pausing streaming file");
+        streamer.pause();
+    }
+
+    public void stop() {
+        Log.i(Consts.loggerTag, "Stopping streaming file");
+        streamer.stop();
     }
 }
