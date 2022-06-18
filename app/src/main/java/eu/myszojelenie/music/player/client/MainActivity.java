@@ -39,6 +39,9 @@ public class MainActivity extends AppCompatActivity implements Listener {
 
     private void intentResultHandler(final Uri uri) {
         try {
+            if (uri == null)
+                return;
+
             streamingService.setToStream(getContentResolver().openInputStream(uri));
             setTextOfView(R.id.fileStatus, "File has been selected", "#00FF00");
             isFileChosen = true;
@@ -70,10 +73,11 @@ public class MainActivity extends AppCompatActivity implements Listener {
         if(isFileChosen && lookLikeIp(ip)) {
             message = "Connected";
             color = "#00FF00";
-            new Thread(streamingService::startStreaming).start();
             findViewById(R.id.startButton).setEnabled(false);
             findViewById(R.id.pauseButton).setEnabled(true);
             findViewById(R.id.stopButton).setEnabled(true);
+            findViewById(R.id.picker).setEnabled(false);
+            new Thread(streamingService::startStreaming).start();
         }
 
         setTextOfView(R.id.statusText, message, color);
@@ -129,7 +133,11 @@ public class MainActivity extends AppCompatActivity implements Listener {
 
     private void handleStopButtonClicked() {
         Button button = findViewById(R.id.pauseButton);
-        button.setText("Resume");
+        button.setText("Pause");
+        findViewById(R.id.startButton).setEnabled(false);
+        findViewById(R.id.pauseButton).setEnabled(false);
+        findViewById(R.id.stopButton).setEnabled(false);
+        findViewById(R.id.picker).setEnabled(true);
         streamingService.stop();
     }
 }
